@@ -9,7 +9,7 @@ router.post("/create", async (req, res) => {
     //const user = await users.findOne({ where: { username: username } });
     if (!user) {
     } else {
-      res.json({ error: "User already exists" }); // 409
+      res.json({ error: "" });
     }
   } catch (error) {
     console.log(error);
@@ -17,9 +17,17 @@ router.post("/create", async (req, res) => {
   }
 });
 
-//TO DO: what is this?
-router.get("/getByUserId", validateToken, (req, res) => {
-  res.json(res.user);
+router.get("/getByUserId", validateToken, async (req, res) => {
+  const userId = req.userToken.id;
+  try {
+    const userCharacters = await characters.findAll({
+      where: { userId: userId },
+    });
+    res.json(userCharacters);
+  } catch (error) {
+    console.log(error);
+    res.json({ error: "something went wrong" });
+  }
 });
 
 module.exports = router;

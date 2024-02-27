@@ -37,7 +37,7 @@ router.post("/login", async (req, res) => {
         res.json({ error: "Password does not match." });
       } else {
         const accessToken = sign(
-          { username: user.username, id: user.id },
+          { username: user.username, id: user.userId },
           "secure" //TO DO: change this to env
         );
         res.json(accessToken);

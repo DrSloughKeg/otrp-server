@@ -12,6 +12,35 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING(50),
         allowNull: false,
       },
+      class: {
+        type: DataTypes.ENUM,
+        values: ["warrior", "rogue", "wizard"],
+        allowNull: false,
+      },
+      lvl: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        validate: {
+          min: 0,
+          max: 99,
+        },
+      },
+      hp: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        validate: {
+          min: 0,
+          max: 99,
+        },
+      },
+      ap: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        validate: {
+          min: 0,
+          max: 99,
+        },
+      },
       str: {
         type: DataTypes.INTEGER,
         allowNull: false,
