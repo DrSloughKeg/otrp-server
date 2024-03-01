@@ -2,7 +2,62 @@ const express = require("express");
 const router = express.Router();
 const { characters } = require("../models");
 const { users } = require("../models");
+const { sign } = require("jsonwebtoken");
 const { validateToken } = require("../middleware/authmiddleware");
+const { validatePlayToken } = require("../middleware/eventhandler");
+
+router.post("/play", validateToken, async (req, res) => {
+  const userId = req.userToken.id;
+  try {
+    const user = await users.findOne({ where: { userId: userId } });
+    const char = await characters.findOne({
+      where: { charId: req.body.charId },
+    });
+    if (!user) {
+      res.json({ error: "user not logged in" });
+    } else if (!char) {
+      res.json({ error: "character does not exist" });
+    } else if (char.userId != user.userId) {
+      res.json({
+        error: "you do not have permission to access this character",
+      });
+    } else {
+      const playToken = sign(
+        { charId: char.charId },
+        "secure" //TO DO: change this to env
+      );
+      res.json(playToken);
+    }
+  } catch (error) {
+    console.log(error);
+    res.json({ error: "DB connection issue?" });
+  }
+});
+
+router.get("/getEvent", validateToken, validatePlayToken, async (req, res) => {
+  const userId = req.userToken.id;
+  const charId = req.charToken.charId;
+  try {
+    const user = await users.findOne({ where: { userId: userId } });
+    const char = await characters.findOne({
+      where: { charId: charId },
+    });
+    if (!user) {
+      res.json({ error: "user not logged in" });
+    } else if (!char) {
+      res.json({ error: "character does not exist" });
+    } else if (char.userId != user.userId) {
+      res.json({
+        error: "you do not have permission to access this character",
+      });
+    } else {
+      res.json(char);
+    }
+  } catch (error) {
+    console.log(error);
+    res.json({ error: "DB connection issue?" });
+  }
+});
 
 router.post("/create", validateToken, async (req, res) => {
   //calculate HP and AP
@@ -21,19 +76,20 @@ router.post("/create", validateToken, async (req, res) => {
   try {
     const user = await users.findOne({ where: { userId: userId } });
     if (!user) {
-    } else {
       res.json({ error: "user not logged in" });
+    } else {
+      await characters.create({
+        userId: userId,
+        hp: hp,
+        lvl: 1,
+        charName: req.body.name,
+        ap: ap,
+        evnt: 0,
+        class: req.body.charClass,
+        ...req.body,
+      });
+      res.json("success");
     }
-    await characters.create({
-      userId: userId,
-      hp: hp,
-      lvl: 1,
-      charName: req.body.name,
-      ap: ap,
-      evnt: 0,
-      class: req.body.charClass,
-      ...req.body,
-    });
   } catch (error) {
     console.log(error);
     res.json({ error: "DB connection issue?" });
@@ -50,6 +106,29 @@ router.get("/getByUserId", validateToken, async (req, res) => {
   } catch (error) {
     console.log(error);
     res.json({ error: "something went wrong" });
+  }
+});
+
+router.delete("/delete", validateToken, async (req, res) => {
+  const userId = req.userToken.id;
+  try {
+    const user = await users.findOne({ where: { userId: userId } });
+    const char = await characters.findOne({
+      where: { charId: req.body.charId },
+    });
+    if (!user) {
+      res.json({ error: "user not logged in" });
+    } else if (!char) {
+      res.json({ error: "character does not exist" });
+    } else if (char.userId != user.userId) {
+      res.json({ error: "you do not have permission to delete this" });
+    } else {
+      await char.destroy();
+      res.json({ success: "character deleted successfully" });
+    }
+  } catch (error) {
+    console.log(error);
+    res.json({ error: "DB connection issue?" });
   }
 });
 
