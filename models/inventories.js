@@ -1,6 +1,6 @@
 module.exports = (sequelize, DataTypes) => {
-  const inventory = sequelize.define(
-    "inventory",
+  const inventories = sequelize.define(
+    "inventories",
     {
       itemId: {
         type: DataTypes.INTEGER,
@@ -14,9 +14,17 @@ module.exports = (sequelize, DataTypes) => {
         primaryKey: true,
         references: { model: "characters", key: "charId" },
       },
+      quantity: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        validate: {
+          min: 0,
+          max: 99,
+        },
+      },
     },
     { timestamps: false }
   );
 
-  return inventory;
+  return inventories;
 };
