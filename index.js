@@ -12,8 +12,10 @@ app.use("/users", userRouter);
 const charRouter = require("./routes/characters");
 app.use("/character", charRouter);
 
+const port = process.env.MYSQLPORT;
+
 db.sequelize.sync().then(() => {
-  app.listen(3001, () => {
-    console.log("Server running on port 3001");
+  app.listen(port, () => {
+    console.log("Server running on port " + port);
   });
 });

@@ -26,7 +26,7 @@ router.post("/play", validateToken, async (req, res) => {
     } else {
       const playToken = sign(
         { charId: char.charId },
-        "secure" //TO DO: change this to env
+        process.env.TOKENKEY //TO DO: change this to env
       );
       res.json(playToken);
     }

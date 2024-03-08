@@ -38,7 +38,7 @@ router.post("/login", async (req, res) => {
       } else {
         const accessToken = sign(
           { username: user.username, id: user.userId },
-          "secure" //TO DO: change this to env
+          process.env.TOKENKEY //TO DO: change this to env
         );
         res.json(accessToken);
       }
