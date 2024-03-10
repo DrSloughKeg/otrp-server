@@ -5,6 +5,7 @@ const bcrypt = require("bcrypt");
 const { sign } = require("jsonwebtoken");
 const { validateToken } = require("../middleware/authmiddleware");
 
+//registration requests
 router.post("/regi", async (req, res) => {
   const { username, email, password } = req.body;
   try {
@@ -27,9 +28,10 @@ router.post("/regi", async (req, res) => {
   }
 });
 
+//Login requests
 router.post("/login", async (req, res) => {
   const { username, password } = req.body;
-  const user = await users.findOne({ where: { username: username } }); //try catch
+  const user = await users.findOne({ where: { username: username } }); //TO DO: add try catch
 
   if (user) {
     bcrypt.compare(password, user.password).then((match) => {
@@ -38,7 +40,7 @@ router.post("/login", async (req, res) => {
       } else {
         const accessToken = sign(
           { username: user.username, id: user.userId },
-          process.env.TOKENKEY //TO DO: change this to env
+          process.env.TOKENKEY
         );
         res.json(accessToken);
       }
@@ -48,7 +50,7 @@ router.post("/login", async (req, res) => {
   }
 });
 
-//TO DO: what is this?
+//this is the auth-validator that is called when you first open the site
 router.get("/", validateToken, (req, res) => {
   res.json(res.user);
 });
