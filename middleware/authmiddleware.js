@@ -7,7 +7,7 @@ const validateToken = (req, res, next) => {
     return res.json({ error: "User not logged in!" });
   }
   try {
-    const validToken = verify(accessToken, "secure"); //TO DO: change this to env
+    const validToken = verify(accessToken, process.env.TOKENKEY); //TO DO: change this to env
 
     if (validToken) {
       req.userToken = validToken;

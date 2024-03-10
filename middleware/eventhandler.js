@@ -7,7 +7,7 @@ const validatePlayToken = (req, res, next) => {
     return res.json({ error: "No character selected" });
   }
   try {
-    const charToken = verify(playToken, "secure"); //TO DO: change this to env
+    const charToken = verify(playToken, process.env.TOKENKEY); //TO DO: change this to env
 
     if (charToken) {
       req.charToken = charToken;
