@@ -11,6 +11,8 @@ const userRouter = require("./routes/users");
 app.use("/users", userRouter);
 const charRouter = require("./routes/characters");
 app.use("/character", charRouter);
+const AiRouter = require("./routes/API");
+app.use("/OpenAi", AiRouter);
 
 const port = process.env.PORT;
 

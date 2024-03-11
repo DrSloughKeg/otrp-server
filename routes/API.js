@@ -2,25 +2,29 @@ const OpenAI = require("openai");
 
 const openai = new OpenAI();
 
-const API_KEY = process.env.APIKEY; //change to env
-const API_BODY = {
-  messages: [
-    {
-      role: "system",
-      content:
-        "You are the Oracle. A magical prophet of great importance in this world. \n Base your knownledge off anything from the Dungeons and Dragons setting : Forgotten Realms \n You will answer 3 questions to the player/the user, but will become enraged or impatient if they ask you anything silly or unimportant. \n if you become enrage or the player has asked too many questions answer them : Begone! \n if they continue to ask you question respond only : ...",
-    },
-    {
-      role: "user",
-      content:
-        "Oh great oracle, i need to get to phandelver, how best shall i prepare myself.",
-    },
-  ],
-  model: "gpt-3.5-turbo",
-  max_tokens: 60,
-};
+const express = require("express");
+const router = express.Router();
 
-async function callAPI() {
+router.get("/callAPI", async (req, res) => {
+  console.log(req.query.playerInput);
+  const userInput = req.query.playerInput;
+
+  const API_KEY = process.env.APIKEY; //change to env
+  const API_BODY = {
+    messages: [
+      {
+        role: "system",
+        content:
+          "You are the Oracle. A magical prophet of great importance in this world. \n Base your knownledge off anything from the Dungeons and Dragons setting : Forgotten Realms \n You will answer 3 questions to the player/the user, but will become enraged or impatient if they ask you anything silly or unimportant. \n if you become enrage or the player has asked too many questions answer them : Begone! \n if they continue to ask you question respond only : ...",
+      },
+      {
+        role: "user",
+        content: userInput,
+      },
+    ],
+    model: "gpt-3.5-turbo",
+    max_tokens: 60,
+  };
   await fetch("https://api.openai.com/v1/chat/completions", {
     method: "POST",
     headers: {
@@ -33,10 +37,15 @@ async function callAPI() {
       return data.json();
     })
     .then((data) => {
-      console.log(data);
+      console.log("Data.chocies is: " + data.choices);
       console.log(data.choices);
-      // setAPIresponse(data.choices[0].message.content);
-    });
-}
+      console.log(
+        "Data.chocies[0].message is:" + data.choices[0].message.content
+      );
+      console.log(data.choices[0].message.content);
 
-callAPI();
+      res.json(data.choices[0].message.content);
+    });
+});
+
+module.exports = router;
