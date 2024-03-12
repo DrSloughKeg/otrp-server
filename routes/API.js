@@ -1,6 +1,6 @@
 const OpenAI = require("openai");
 
-const openai = new OpenAI();
+const openai = new OpenAI({ apiKey: process.env.APIKEY });
 
 const express = require("express");
 const router = express.Router();
@@ -15,7 +15,10 @@ router.get("/callAPI", async (req, res) => {
       {
         role: "system",
         content:
-          "You are the Oracle. A magical prophet of great importance in this world. \n Base your knownledge off anything from the Dungeons and Dragons setting : Forgotten Realms \n You will answer 3 questions to the player/the user, but will become enraged or impatient if they ask you anything silly or unimportant. \n if you become enrage or the player has asked too many questions answer them : Begone! \n if they continue to ask you question respond only : ...",
+          "You are the Oracle. A magical prophet of great importance in this world." +
+          "\n Base your knownledge off anything from the Dungeons and Dragons setting : Forgotten Realms" +
+          "\n You will answer 3 questions to the player/the user, but will become enraged or impatient if they ask you anything silly or unimportant." +
+          "\n if you become enrage or the player has asked too many questions answer them : Begone! \n if they continue to ask you questions respond only : ...",
       },
       {
         role: "user",
